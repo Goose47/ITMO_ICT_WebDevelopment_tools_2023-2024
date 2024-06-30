@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>L2.1 - Report</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "L2.1";
+        var mkdocs_page_input_path = "task1.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Report
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">L2.1</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#sum_threadingpy">sum_threading.py</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#multiprocessing_sumpy">multiprocessing_sum.py</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#asyncio_sumpy">asyncio_sum.py</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_1">Выводы</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_2">Приложение</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../task2/">L2.2</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">L3</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Report</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">L2.1</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="1">Задание 1</h1>
+<p>С помощью трех подходов: threading, multiprocessing и async/await
+сумма чисел от 1 до 1000000 была разбита на заранее задданное число чанков и вычислена</p>
+<h2 id="sum_threadingpy">sum_threading.py</h2>
+<pre><code class="language-python">from multiprocessing.pool import ThreadPool
+from time import time
+
+RUNS_NUMBER = 3
+CHUNKS_NUMBER = 4
+NUMBER = 1000000
+
+
+def calc(lr):
+    l, r = lr
+    return sum(range(l, r))
+
+
+def main():
+    args = []
+
+    for i in range(CHUNKS_NUMBER):
+        l = int(i * NUMBER / CHUNKS_NUMBER + 1)
+        r = int(l + NUMBER / CHUNKS_NUMBER)
+        args.append((l, r))
+
+    pool = ThreadPool(len(args))
+
+    start = time()
+    res = pool.map(calc, args)
+    pool.close()
+    pool.join()
+    exec_time = time() - start
+
+    return exec_time, res
+
+
+if __name__ == &quot;__main__&quot;:
+    times = []
+    for i in range(RUNS_NUMBER):
+        next_time, res = main()
+        times.append(next_time)
+        print(i + 1, ' run: ', next_time, 's. RESULT: ', sum(res))
+    print('Average time: ', sum(times) / len(times), 's')
+</code></pre>
+<h2 id="multiprocessing_sumpy">multiprocessing_sum.py</h2>
+<pre><code class="language-python"> import multiprocessing
+from time import time
+
+RUNS_NUMBER = 3
+CHUNKS_NUMBER = 4
+NUMBER = 1000000
+
+
+def calc(lr):
+    l, r = lr
+    return sum(range(l, r))
+
+
+def main():
+    args = []
+
+    for i in range(CHUNKS_NUMBER):
+        l = int(i * NUMBER / CHUNKS_NUMBER + 1)
+        r = int(l + NUMBER / CHUNKS_NUMBER)
+        args.append((l, r))
+
+    pool = multiprocessing.Pool(len(args))
+
+    start = time()
+    res = pool.map(calc, args)
+    pool.close()
+    pool.join()
+    exec_time = time() - start
+
+    return exec_time, res
+
+
+if __name__ == &quot;__main__&quot;:
+    times = []
+    for i in range(RUNS_NUMBER):
+        next_time, res = main()
+        times.append(next_time)
+        print(i + 1, ' run: ', next_time, 's. RESULT: ', sum(res))
+    print('Average time: ', sum(times) / len(times), 's')
+</code></pre>
+<h2 id="asyncio_sumpy">asyncio_sum.py</h2>
+<pre><code class="language-python">import asyncio
+from time import time
+
+RUNS_NUMBER = 3
+CHUNKS_NUMBER = 4
+NUMBER = 1000000
+
+
+async def calc(l, r):
+    return sum(range(l, r))
+
+
+async def main():
+    tasks = []
+
+    for i in range(CHUNKS_NUMBER):
+        l = int(i * NUMBER / CHUNKS_NUMBER + 1)
+        r = int(l + NUMBER / CHUNKS_NUMBER)
+
+        task = asyncio.create_task(calc(l, r))
+        tasks.append(task)
+
+    start = time()
+    res = await asyncio.gather(*tasks)
+    exec_time = time() - start
+
+    return exec_time, res
+
+
+if __name__ == &quot;__main__&quot;:
+    times = []
+    for i in range(RUNS_NUMBER):
+        next_time, res = asyncio.run(main())
+        times.append(next_time)
+        print(i + 1, ' run: ', next_time, 's. RESULT: ', sum(res))
+    print('Average time: ', sum(times) / len(times), 's')
+</code></pre>
+<h2 id="_1">Выводы</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>Threading</strong></th>
+<th><strong>Multiprocessing</strong></th>
+<th><strong>Asyncio</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>0.029</td>
+<td>0.16</td>
+<td>0.027</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0.030</td>
+<td>0.14</td>
+<td>0.028</td>
+</tr>
+<tr>
+<td>3</td>
+<td>0.029</td>
+<td>0.12</td>
+<td>0.027</td>
+</tr>
+<tr>
+<td><strong>Avg</strong></td>
+<td>0.029</td>
+<td>0.14</td>
+<td>0.0273</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Threading</strong>: Время выполнения одного порядка с asyncio. Однако, Threading ограничен GIL, что может замедлить выполнение на многопроцессорных системах.</li>
+<li><strong>Multiprocessing</strong>: Проигрывает на порядок остальным методам. Скорее всего время увеличено из-за ресурсных затрат на переключчение между процессами.</li>
+<li><strong>Asyncio</strong>:  Обеспечивает лучшую производительность благодаря эффективному использованию асинхронных операций без создания дополнительных процессов или потоков.</li>
+</ul>
+<h2 id="_2">Приложение</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>Threading</strong></th>
+<th><strong>Multiprocessing</strong></th>
+<th><strong>Asyncio</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>28.88</td>
+<td>11.23</td>
+<td>28.44</td>
+</tr>
+<tr>
+<td>2</td>
+<td>28.90</td>
+<td>10.67</td>
+<td>29.03</td>
+</tr>
+<tr>
+<td>3</td>
+<td>29.68</td>
+<td>10.90</td>
+<td>34.16</td>
+</tr>
+<tr>
+<td><strong>Avg</strong></td>
+<td>29.15</td>
+<td>10.93</td>
+<td>30.54</td>
+</tr>
+</tbody>
+</table>
+<p>На 1 000 000 000 multiprocessing показал наилучший результат. Отсюда можно сделать вывод, что с ростом сложности вычислений затраты на создание и управление процессами нивелируется.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../task2/" class="btn btn-neutral float-right" title="L2.2">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+      <span><a href="../task2/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="None" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>Report</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "L3";
+        var mkdocs_page_input_path = "index.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> Report
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="task1/">L2.1</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="task2/">L2.2</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href=".">L3</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#_2">Задача лабораторной работы</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_3">Стек</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_4">Структура папок</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_5">Запуск</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">Report</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">L3</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="_1">Отчёт</h1>
+<h2 id="_2">Задача лабораторной работы</h2>
+<p>Научиться упаковывать FastAPI приложение в Docker, интегрировать парсер данных с базой данных и вызывать парсер через API и очередь.</p>
+<h2 id="_3">Стек</h2>
+<ul>
+<li><code>nginx</code></li>
+<li><code>certbot</code></li>
+<li><code>fastapi</code></li>
+<li><code>postgresql</code></li>
+<li><code>uvicorn</code></li>
+<li><code>gunicorn</code></li>
+<li><code>alembic</code></li>
+<li><code>sqlalchemy</code></li>
+<li><code>jose</code> - генерация JWT токенов</li>
+<li><code>redis</code> - для обмена сообщениями через publisher/subscriber</li>
+</ul>
+<h2 id="_4">Структура папок</h2>
+<pre><code class="language-bash">├── fastapi
+    └── src
+      └── api
+          ├── dependecies
+          ├── routers
+          ├── transformers
+          └── api
+      ├── config
+      └── database
+          ├── migrations
+          └── seeders
+      ├── utils
+      └── env.example
+      └── Dockerfile
+    └── env.example
+├── nginx
+    └── conf.d
+        └── app.conf
+├── pgsql
+    └── env.example
+└── redis
+    └── redis.conf
+├── docker-compose.yml
+└── README.md
+</code></pre>
+<h2 id="_5">Запуск</h2>
+<p>Запуск проекта осуществляется командой <code>docker compose up</code>.
+Миграции применяются через <code>alembic upgrade head</code></p>
+<h1 id="_6">Результаты</h1>
+<p>Получилось упаковать приложение на fastapi вместе с redis и postgres в Docker, интегрировать с БД, развернуть его в облаке и обеспечить доступ по https.</p>
+<h1 id="_7">Ход работы</h1>
+<h1 id="docker">Docker</h1>
+<p>Рассмотрим конфигурации приложения:</p>
+<p>Dockerfile fastapi: устанавловаем все необходимые зависимости, открываем порт и запускаем воркеры uvicorn с помощью gunicorn</p>
+<pre><code class="language-Dockerfile">FROM python:3.9-alpine
+WORKDIR /app
+
+COPY ./requirements.txt requirements.txt
+RUN apk update &amp;&amp; \
+    apk add build-base &amp;&amp; \
+    pip install -r requirements.txt
+
+EXPOSE 8000
+CMD [&quot;gunicorn&quot;, &quot;src.main:app&quot;, &quot;--workers&quot;, &quot;4&quot;, &quot;--worker-class&quot;, &quot;uvicorn.workers.UvicornWorker&quot;, &quot;--bind&quot;, &quot;0.0.0.0:8000&quot;]
+</code></pre>
+<p>В композ-файле объявлены пять сервисов:</p>
+<ul>
+<li>Прокси сервер (nginx)</li>
+<li>сертбот для получения ssl-сертификатов (certbot)</li>
+<li>База данных (postgres)</li>
+<li>Redis (redis)</li>
+<li>Приложение API (fastapi)</li>
+</ul>
+<p>```YML title="docker-compose.yml"
+version: '3'
+services:</p>
+<p>nginx:
+    image: nginx:alpine
+    container_name: otiva_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./certbot/www:/var/www/certbot/
+      - ./certbot/conf:/etc/letsencrypt/
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - otiva</p>
+<p>fastapi:
+    container_name: otiva_fastapi
+    restart: unless-stopped
+    build:
+      context: ./fastapi
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./fastapi:/app
+    networks:
+      - otiva</p>
+<p>postgres:
+    container_name: otiva_postgres
+    restart: unless-stopped
+    image: postgres:14
+    ports:
+      - "5432:5432"
+    env_file:
+      - ./pgsql/.env
+    volumes:
+      - otiva-pgsql-volume:/var/lib/postgresql/data
+    networks:
+      - otiva</p>
+<p>redis:
+    image: redis:alpine
+    container_name: otiva_redis
+    restart: unless-stopped
+    volumes:
+      - otiva-redis-volume:/data
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    expose:
+      - 6379
+    command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      - otiva</p>
+<p>certbot:
+    image: certbot/certbot
+    container_name: otiva_certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    command: certonly --webroot -w /var/www/certbot/ --email test.space@gmail.com --agree-tos</p>
+<p>networks:
+  otiva:
+    driver: bridge</p>
+<p>volumes:
+  otiva-pgsql-volume:
+    driver: local
+  otiva-redis-volume:
+    driver: local</p>
+<pre><code>
+Конфигурация nginx
+```bash title=app.conf
+server {
+server {
+  listen 80;
+  server_name api.otiva.space;
+
+  location /.well-known/acme-challenge/ {
+    root /var/www/certbot;
+  }
+
+  location / {
+    return 301 https://$host$request_uri;
+  }
+}
+
+server {
+  listen 443 ssl;
+  server_name api.otiva.space;
+
+  ssl_certificate /etc/letsencrypt/live/otiva/fullchain.pem; # managed by Certbot
+  ssl_certificate_key /etc/letsencrypt/live/otiva/privkey.pem; # managed by Certbot
+
+  charset utf-8;
+
+  set $cors_origin &quot;&quot;;
+  set $cors_cred   &quot;&quot;;
+  set $cors_header &quot;&quot;;
+  set $cors_method &quot;&quot;;
+
+
+  if ($http_origin = &quot;https://otiva.space&quot;) {
+      set $cors_origin $http_origin;
+      set $cors_cred   true;
+      set $cors_header $http_access_control_request_headers;
+      set $cors_method $http_access_control_request_method;
+  }
+
+  add_header Access-Control-Allow-Origin      $http_origin always;
+  add_header Access-Control-Allow-Credentials $cors_cred always;
+  add_header Access-Control-Allow-Headers     $cors_header always;
+  add_header Access-Control-Allow-Methods     $cors_method always;
+
+  if ($request_method = 'OPTIONS') {
+      return 204;
+  }
+
+  location /ws {
+      proxy_pass http://otiva_fastapi:8000;
+      proxy_http_version 1.1;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection &quot;Upgrade&quot;;
+      proxy_set_header Host $host;
+  }
+
+  location / {
+      proxy_pass http://otiva_fastapi:8000;
+      proxy_set_header Host $host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_redirect off;
+  }
+}
+</code></pre>
+<h1 id="fastapi">FastAPI</h1>
+<p>Был написан небольшой клиент для работы с redis pub/sub
+```python title=pubsub.py
+from src.utils.redis import redis
+import json
+import asyncio
+from typing import Union</p>
+<p>class PubSubEvents:
+    NEW_MESSAGE: str = 'new_message'</p>
+<p>class PubSubMessage:
+    def <strong>init</strong>(self, data, pattern, channel, type):
+        self.data = data
+        self.pattern = pattern
+        self.channel = channel
+        self.type = type</p>
+<p>class PubSubEvent:
+    def <strong>init</strong>(self, name, data: Union[list, dict]):
+        self.name = name
+        self.data = data</p>
+<pre><code>def serialize(self) -&gt; str:
+    data = {
+        'name': self.name,
+        'data': self.data,
+    }
+    return json.dumps(data)
+</code></pre>
+<p>class PubSub:
+    @staticmethod
+    async def publish(payload: dict[str, PubSubEvent]):
+        """Accepts dict {channel_name: data} and publishes data to respective channel names"""
+        if not payload:
+            return
+        pub = redis.get_connection()</p>
+<pre><code>    for channel in payload:
+        event: PubSubEvent = payload[channel]
+        await pub.publish(channel, event.serialize())
+
+    await pub.close()
+
+@staticmethod
+async def subscribe(channel: str):
+    sub = redis.get_connection().pubsub()
+    async with sub as conn:
+        await conn.subscribe(channel)
+
+        while True:
+            try:
+                message = await conn.get_message(ignore_subscribe_messages=True)
+                if message is not None:
+                    dto = PubSubMessage(
+                        data=message['data'].decode('utf-8'),
+                        pattern=message['pattern'].decode('utf-8') if message['pattern'] else None,
+                        channel=message['channel'].decode('utf-8') if message['channel'] else None,
+                        type=message['type'] if message['type'] else None,
+                    )
+                    yield dto
+                await asyncio.sleep(1)
+            except Exception:
+                break
+
+        await conn.unsubscribe(channel)
+    await sub.close()
+</code></pre>
+<pre><code>
+Pub/sub redis используется в приложении для отправки уведомлений пользователю черезз Websockets
+
+```python title=notifications.py
+from fastapi import WebSocket, APIRouter, Depends
+from src.api.dependencies.auth import Auth
+from src.utils.pubsub import PubSub
+
+
+router = APIRouter()
+
+
+@router.websocket(&quot;/ws/notifications&quot;)
+async def websocket_endpoint(websocket: WebSocket, auth: Auth = Depends()):
+    await websocket.accept()
+    try:
+        user = await auth.check_access_token_websocket(websocket)
+    except Exception as e:
+        await websocket.send_text('Unauthenticated')
+        await websocket.close()
+        return
+
+    channel_name = f'notifications:{user.id}'
+
+    async for message in PubSub.subscribe(channel_name):
+        await websocket.send_text(message.data)
+
+    await websocket.close()
+</code></pre>
+<p>Пример отправки сообщения о новом сообщении в чате:</p>
+<p>```python title=chat.py
+@router.post('/{chat_id}/messages')
+async def store_message(chat_id: int, request: Request, auth: Auth = Depends()):
+    await auth.check_access_token(request)</p>
+<pre><code>validator = Validator(await request.json() | {'chat_id': chat_id}, {
+    'text': ['required', 'string'],
+}, {}, BasePayload())
+payload = validator.validated()
+
+# chat must have current user as ChatUser
+async with db_manager.get_session() as session:
+    q = select(Chat) \
+        .options(joinedload(Chat.chat_users)) \
+        .where(Chat.id == chat_id)
+    res = await session.execute(q)
+    chat: Chat = res.scalar()
+
+if not chat:
+    return ApiResponse.error('Chat does not exists.')
+
+current_chat_user: ChatUser = next(filter(lambda cu: cu.user_id == request.state.user.id, chat.chat_users), None)
+
+if not current_chat_user:
+    return ApiResponse.error('User does not belongs to this chat.')
+
+message: ChatMessage = await SqlAlchemyRepository(db_manager.get_session, ChatMessage).create({
+    'chat_user_id': current_chat_user.id,
+    'chat_id': chat_id,
+    'text': payload.text,
+    'seen_at': None,
+})
+
+transformed_message = transform(message, ChatMessageTransformer())
+
+notifications = {}
+for chat_user in chat.chat_users:
+    # do not notify sender
+    if chat_user.user_id == request.state.user.id:
+        continue
+    notifications[f'notifications:{chat_user.user_id}'] = PubSubEvent(PubSubEvents.NEW_MESSAGE, transformed_message)
+
+await PubSub.publish(notifications)  # todo to queue
+
+return ApiResponse.payload(transformed_message)
+</code></pre>
+<p>```</p>
+<h1 id="_8">Пример работы:</h1>
+<h2 id="_9">Подключаемся к вебсокету</h2>
+<p><img alt="alt" src="assets/ws_connected.png" /></p>
+<h2 id="_10">Отправляем сообщение</h2>
+<p><img alt="alt" src="assets/message_sent.png" /></p>
+<h2 id="_11">Уведомление пришло</h2>
+<p><img alt="alt" src="assets/notification_received.png" /></p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="task2/" class="btn btn-neutral float-left" title="L2.2"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="task2/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.5.3
+Build Date UTC : 2024-06-30 09:29:38.902244+00:00
+-->
